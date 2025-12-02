@@ -94,7 +94,7 @@ $grade=1.0430 \sqrt{\textbf{number of polysyllabic words} \times \frac{30}{\text
 
 ## Flesch-Kincaid
 
-This method is typically the least accurate of the three. It tends to UNDERESTIMATE (lower level, higher ease). The method returns 2 values the `FleschKincaidResult.Ease` and the `FleschKincaidResult.Level`. The `Level` is essentially the numebr of years of education to understand, the ease is the opposite, it's a score where the higher the ease, the easier the text is to read. Ease is approximately:
+This method is typically the least accurate of the three. It tends to UNDERESTIMATE (lower level, higher ease), level tends to be 1-2 years less than it should be depending on formatting, and ease tends to be 1-2 bands higher than it should be (i.e. you may get 40 putting it at a college level, but it likely should be College graduate or proffessional). The method returns 2 values the `FleschKincaidResult.Ease` and the `FleschKincaidResult.Level`. The `Level` is essentially the numebr of years of education to understand, the ease is the opposite, it's a score where the higher the ease, the easier the text is to read. Ease is approximately:
 
 | Score | School Level (US) | Notes |
 |-------|-------------------|-------|

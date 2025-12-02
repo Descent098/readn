@@ -84,7 +84,7 @@ func GetTextData(text string) *textInformation {
 		polySylabicWords int
 		characterTotal   int
 	)
-	re := regexp.MustCompile(`[.?!]\s+`)
+	re := regexp.MustCompile(`[.?!][\s\r\n]+`)
 	sentences := re.Split(text, -1)
 
 	var cleanedSentences []string
