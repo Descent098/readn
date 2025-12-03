@@ -2,8 +2,9 @@ package readn_test
 
 import (
 	"math"
-	"readn"
 	"testing"
+
+	"github.com/descent098/readn"
 )
 
 func TestFleschKincaid(t *testing.T) {
