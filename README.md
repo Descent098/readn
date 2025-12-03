@@ -18,6 +18,14 @@ The error percentages go up the more the text is not just in simple plaintext fo
 - Numbers are ignored
 - Non-sentence text data will cause errors (i.e. math formulas in markdown text)
 
+## Installation
+
+You can add the package to your project using:
+
+```bash
+go get https://github.com/Descent098/readn
+```
+
 ## Flesch-Kincaid
 
 This method is the most variant of the three (effected by error rates), but typically the most widely used in literature. It tends to UNDERESTIMATE (lower level, higher ease), level tends to be 0.5-2 years less than it should be depending on formatting, and ease tends to be 1-2 bands higher than it should be (i.e. you may get 40 putting it at a college level, but it likely should be College graduate or proffessional). The method returns 2 values the `FleschKincaidResult.Ease` and the `FleschKincaidResult.Level`. The `Level` is essentially the numebr of years of education to understand, the ease is the opposite, it's a score where the higher the ease, the easier the text is to read. Ease is approximately:
