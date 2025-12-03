@@ -8,8 +8,8 @@ This library provides a few different algorithms for determining the difficulty 
 
 The effectiveness of this library is massively limited by it's accuracy in:
 
-- counting sentences
-- counting sylables
+- counting sentences; This also uses a heuristic since text often breaks the standard grammatical formatting. This also makes all of the measurements worse at text like poetry, since sentences often don't end with punctuation.
+- counting syllables; A heuristic is used to calculate this since there's no known perfect way of doing it
 
 The error percentages go up the more the text is not just in simple plaintext format with standard sentence formatting (i.e. ending sentences with proper punctuation). Likewise there are major limitations in what types of text are possible to analyze:
 
@@ -18,9 +18,40 @@ The error percentages go up the more the text is not just in simple plaintext fo
 - Numbers are ignored
 - Non-sentence text data will cause errors (i.e. math formulas in markdown text)
 
+## Flesch-Kincaid
+
+This method is the most variant of the three (effected by error rates), but typically the most widely used in literature. It tends to UNDERESTIMATE (lower level, higher ease), level tends to be 0.5-2 years less than it should be depending on formatting, and ease tends to be 1-2 bands higher than it should be (i.e. you may get 40 putting it at a college level, but it likely should be College graduate or proffessional). The method returns 2 values the `FleschKincaidResult.Ease` and the `FleschKincaidResult.Level`. The `Level` is essentially the numebr of years of education to understand, the ease is the opposite, it's a score where the higher the ease, the easier the text is to read. Ease is approximately:
+
+| Score | School Level (US) | Notes |
+|-------|-------------------|-------|
+| 100-90 | 5Th Grade | Very easy to read. Easily understood by an average 11-year-old student |
+| 90.0-80.0 | 	6th grade	| Easy to read. Conversational English for consumers. |
+| 80.0-70.0 | 	7th grade	| Fairly easy to read. |
+| 70.0-60.0 | 	8th & 9th grade	| Plain English. Easily understood by 13- to 15-year-old students. |
+| 60.0-50.0 | 	10th to 12th grade	| Fairly difficult to read. |
+| 50.0-30.0 | 	College	| Difficult to read. |
+| 30.0-10.0 | 	College graduate	| Very difficult to read. Best understood by university graduates. |
+| 10.0-0.0 | 	Professional	| Extremely difficult to read. Best understood by university graduates. |
+
+### Usage
+
+```go
+package main
+
+import "https://github.com/Descent098/readn"
+
+func main(){
+    text := `some text here`
+
+    res:= readn.FleschKincaid(text)
+
+    fmt.Printf("Your Kincaid ease is ~%.2f your education index it ~%.2f years education", res.Ease, res.Level)
+}
+```
+
 ## Automated Readability Index (ARI)
 
-This is the algorithm I recomend for most people. The index is basically `index-1` years of education to read. So
+This is the algorithm is a good alternative to Flesh-Kincaid for business use cases. The index is basically `index-1` years of education to read. So
 
 | Score | Age | Grade Level |
 |-------|-----|-------------|
@@ -64,7 +95,7 @@ $4.71(\frac{\textbf{characters}}{\textbf{words}})+0.5(\frac{\textbf{words}}{sent
 
 ## Simple Measure Of Gobbledygook (SMOG)
 
-SMOG tends to be the second most accurate of the algorithms. It is designed primarily for Medical writing, but it does work outside this context. However it's important to note it **does not work on text with less than 30 sentences**. The number given is essentially the number of years of education you should have to be able to read the text.
+SMOG tends to be best suited for the medical field, and is the recommended choice for most paper publishers. It is designed primarily for Medical writing, but it does work outside this context. However it's important to note it **does not work on text with less than 30 sentences**. The number given is essentially the number of years of education you should have to be able to read the text.
 
 ### Usage
 
@@ -92,36 +123,7 @@ $grade=1.0430 \sqrt{\textbf{number of polysyllabic words} \times \frac{30}{\text
 
 *A polysyllabic word is defined as any word with 3 or more syllables*
 
-## Flesch-Kincaid
 
-This method is typically the least accurate of the three. It tends to UNDERESTIMATE (lower level, higher ease), level tends to be 1-2 years less than it should be depending on formatting, and ease tends to be 1-2 bands higher than it should be (i.e. you may get 40 putting it at a college level, but it likely should be College graduate or proffessional). The method returns 2 values the `FleschKincaidResult.Ease` and the `FleschKincaidResult.Level`. The `Level` is essentially the numebr of years of education to understand, the ease is the opposite, it's a score where the higher the ease, the easier the text is to read. Ease is approximately:
-
-| Score | School Level (US) | Notes |
-|-------|-------------------|-------|
-| 100-90 | 5Th Grade | Very easy to read. Easily understood by an average 11-year-old student |
-| 90.0-80.0 | 	6th grade	| Easy to read. Conversational English for consumers. |
-| 80.0-70.0 | 	7th grade	| Fairly easy to read. |
-| 70.0-60.0 | 	8th & 9th grade	| Plain English. Easily understood by 13- to 15-year-old students. |
-| 60.0-50.0 | 	10th to 12th grade	| Fairly difficult to read. |
-| 50.0-30.0 | 	College	| Difficult to read. |
-| 30.0-10.0 | 	College graduate	| Very difficult to read. Best understood by university graduates. |
-| 10.0-0.0 | 	Professional	| Extremely difficult to read. Best understood by university graduates. |
-
-### Usage
-
-```go
-package main
-
-import "https://github.com/Descent098/readn"
-
-func main(){
-    text := `some text here`
-
-    res:= readn.FleschKincaid(text)
-
-    fmt.Printf("Your Kincaid ease is ~%.2f your education index it ~%.2f years education", res.Ease, res.Level)
-}
-```
 
 ### Formula
 
@@ -133,4 +135,24 @@ $level=0.39(\frac{\textbf{total words}}{\textbf{total sentences}})+11.8(\frac{\t
 
 - https://en.wikipedia.org/wiki/SMOG
 - https://en.wikipedia.org/wiki/Automated_readability_index
+- https://en.wikipedia.org/wiki/Flesch%E2%80%93Kincaid_readability_tests
+
+Testing data is taken from:
+
+https://www.gutenberg.org/ and requires the inclusion of the following notice in relation to each file in `/testdata`:
+
+```
+This eBook is for the use of anyone anywhere in the United States and most
+other parts of the world at no cost and with almost no restrictions
+whatsoever. You may copy it, give it away or re-use it under the terms
+of the Project Gutenberg License included with this eBook or online
+at www.gutenberg.org. If you
+are not located in the United States, you will have to check the laws
+of the country where you are located before using this eBook.
+```
+
+Additionally reference values to test against were adapted from the following sources:
+
+- [corgis](https://corgis-edu.github.io/corgis/)
+    - [corgis classics](https://corgis-edu.github.io/corgis/python/classics/)
 - https://en.wikipedia.org/wiki/Flesch%E2%80%93Kincaid_readability_tests

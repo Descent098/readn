@@ -84,7 +84,14 @@ func GetTextData(text string) *textInformation {
 		polySylabicWords int
 		characterTotal   int
 	)
-	re := regexp.MustCompile(`[.?!][\s\r\n]+`)
+
+	// There are 3 OR clauses:
+	//	1. You encounter . ? ! ; then a whitespace characeter
+	//  2. You encounter . ? ! ; then a the end of the line
+	//  3. You encounter . ? ! ; then a letter (malformed sentence i.e. finally.Therefore )
+	expression := `[.?!;:]\s+|[.?!;:]+$|[.?!;:][A-z]+`
+
+	re := regexp.MustCompile(expression)
 	sentences := re.Split(text, -1)
 
 	var cleanedSentences []string
